@@ -1,0 +1,52 @@
+{{ $_ := set . "project" "kong-test" }}
+
+project: {{ .project }}
+configVersion: 1
+deploy:
+  namespace: {{ env "NAMESPACE" }}-{{ env "ENVNAME" }}
+  namespaceSlug: false
+
+{{ $_ := set . "BaseImage" "node:13" }}
+---
+image: auth-service
+from: {{ .BaseImage }}
+git:
+- add: /auth-service/
+  to: /
+  stageDependencies:
+    setup:
+    - "*"
+ansible:
+  install:
+  - name: "Install libs"
+    shell: |
+      cd /auth-service && npm i
+
+docker:
+  WORKDIR: /auth-service
+  USER: root
+  EXPOSE: ["9999"]
+  CMD: "cd /auth-service && node main.js"
+
+---
+
+image: consumer-service
+from: {{ .BaseImage }}
+git:
+- add: /consumer-service/
+  to: /
+  stageDependencies:
+    setup:
+    - "*"
+ansible:
+  install:
+  - name: "Install libs"
+    shell: |
+      cd /consumer-service && npm i
+
+docker:
+  WORKDIR: /
+  USER: root
+  EXPOSE: ["9999"]
+  CMD: "cd /consumer-service && node main.js"
+
