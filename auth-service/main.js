@@ -15,6 +15,10 @@ app.get('/auth', (req, res) => {
     console.log("RECEIVED GET", req.headers);
     console.log("RECEIVED COOKIES", req.cookies);
     const token = 'null';
+    if (req.cookies && req.cookies.TOKEN) {
+        token = req.cookies.TOKEN;
+        console.log("FOUND TOKEN ", token);
+    }
     if (!access.has(req.body.token)) {
         res.status(403);
         return res.json({access: false});
