@@ -14,11 +14,12 @@ app.get('/auth', (req, res) => {
     console.log("RECEIVED GET", req.headers);
     const token = 'null';
     if (!access.has(req.body.token)) {
-        return res.status(403);
+        res.status(403);
+        return res.josn({access: false});
     }
     console.log("USER FOUND SETTING HEADER");
     res.header('USER-ID', access.get(token));
-    return res.json({ok: true});
+    return res.json({access: true});
 });
 
 
