@@ -12,7 +12,7 @@ app.use(express.json());
 
 app.get('/auth', (req, res) => {
     console.log("RECEIVED GET", req.headers);
-    const token = req.body.token;
+    const token = 'null';
     if (!access.has(req.body.token)) {
         return res.status(403);
     }
