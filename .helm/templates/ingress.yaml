@@ -1,0 +1,47 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: internal-ingress
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+  - host: auth.kong-test.local
+    http:
+      paths:
+      - pathType: Prefix
+        path: /
+        backend:
+          service:
+            name: auth-service
+            port:
+              number: 80
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: authorized-ingress
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/auth-url: "http://auth-service.kong-test-prod.svc.cluster.local/auth"
+    nginx.ingress.kubernetes.io/auth-method: "GET"
+    nginx.ingress.kubernetes.io/auth-response-headers: "USER-ID"
+    ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+  - host: consumer.kong-test.local
+    http:
+      paths:
+      - pathType: Prefix
+        path: /
+        backend:
+          service:
+            name: consumer-service
+            port:
+              number: 80
+---

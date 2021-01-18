@@ -20,13 +20,13 @@ ansible:
   install:
   - name: "Install libs"
     shell: |
-      cd /auth-service && npm i
+      cd / && npm i --save express cookie-parser
 
 docker:
-  WORKDIR: /auth-service
+  WORKDIR: /
   USER: root
-  EXPOSE: ["9999"]
-  CMD: "cd /auth-service && node main.js"
+  EXPOSE: ["80"]
+  CMD: "cd / && node main.js"
 
 ---
 
@@ -42,11 +42,11 @@ ansible:
   install:
   - name: "Install libs"
     shell: |
-      cd /consumer-service && npm i
+      cd / && npm i --save express
 
 docker:
   WORKDIR: /
   USER: root
-  EXPOSE: ["9999"]
-  CMD: "cd /consumer-service && node main.js"
+  EXPOSE: ["80"]
+  CMD: "cd / && node main.js"
 

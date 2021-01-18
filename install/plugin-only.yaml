@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ingress-kong
+  namespace: kong
+spec:
+  template:
+    spec:
+      containers:
+      - name: proxy
+        env:
+        - name: KONG_PLUGINS
+          value: bundled,myheader
+        - name: KONG_LUA_PACKAGE_PATH
+          value: "/opt/?.lua;;"
+        volumeMounts:
+        - name: kong-plugin-myheader
+          mountPath: /opt/kong/plugins/myheader
+      volumes:
+      - name: kong-plugin-myheader
+        configMap:
+          name: kong-plugin-myheader
+---
+apiVersion: configuration.konghq.com/v1
+kind: KongPlugin
+metadata:
+  name: my-auth-plugin
+  namespace: kong
+config:
+  header_value: "TESTING-ABC-0123"
+plugin: myauth
+---
+apiVersion: v1
+data:
+  handler.lua: |
+    local MyHeader = {}
+
+    MyHeader.PRIORITY = 1000
+
+    function MyHeader:header_filter(conf)
+      -- do custom logic here
+      kong.response.set_header("myauth", conf.header_value)
+    end
+
+    return MyHeader
+  scheme.lua: |
+    return {
+      name = "myauth",
+      fields = {
+        { config = {
+            type = "record",
+            fields = {
+              { header_value = { type = "string", default = "roar", }, },
+            },
+        }, },
+      }
+    }
+kind: ConfigMap
+metadata:
+  creationTimestamp: "2021-01-17T14:00:18Z"
+  name: kong-plugin-myauth
+  namespace: kong
+  resourceVersion: "3392"
+  uid: 7ac16006-432d-4dc7-b1f9-63f470ee4b0c
+---
