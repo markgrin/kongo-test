@@ -19,7 +19,7 @@ app.get('/auth', (req, res) => {
         token = req.cookies.TOKEN;
         console.log("FOUND TOKEN ", token);
     }
-    if (!access.has(req.body.token)) {
+    if (!access.has(token)) {
         res.status(403);
         return res.json({access: false});
     }
