@@ -15,7 +15,7 @@ app.get('/auth', (req, res) => {
     const token = 'null';
     if (!access.has(req.body.token)) {
         res.status(403);
-        return res.josn({access: false});
+        return res.json({access: false});
     }
     console.log("USER FOUND SETTING HEADER");
     res.header('USER-ID', access.get(token));
