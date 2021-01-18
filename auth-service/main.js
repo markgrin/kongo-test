@@ -1,4 +1,5 @@
 const express = require('express');
+const cookies = require('cookie-parser');
 
 let access = new Map();
 
@@ -8,10 +9,11 @@ access.set('token_3', 'user_3');
 
 const app = new express();
 
-app.use(express.json());
+app.use(cookies());
 
 app.get('/auth', (req, res) => {
     console.log("RECEIVED GET", req.headers);
+    console.log("RECEIVED COOKIES", req.cookies);
     const token = 'null';
     if (!access.has(req.body.token)) {
         res.status(403);
