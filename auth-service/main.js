@@ -14,7 +14,7 @@ app.use(cookies());
 app.get('/auth', (req, res) => {
     console.log("RECEIVED GET", req.headers);
     console.log("RECEIVED COOKIES", req.cookies);
-    const token = 'null';
+    let token = 'null';
     if (req.cookies && req.cookies.TOKEN) {
         token = req.cookies.TOKEN;
         console.log("FOUND TOKEN ", token);
